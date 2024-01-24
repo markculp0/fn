@@ -12,6 +12,15 @@
 #   Test Package:              'Ctrl + Shift + T'
 
 #' @export
+col2txt <- function(df, cnum) {
+  f <- file("text.txt", "w")
+  for (i in 1:dim(df)[1]) {
+    writeLines(as.character(df[i, cnum]), f)
+  }
+  close(f)
+}
+
+#' @export
 desc_cnt <- function(df, c){
 
   df2 <- dplyr::select(df, .data[[c]])
@@ -21,6 +30,25 @@ desc_cnt <- function(df, c){
   View(df2)
 
   df2
+}
+
+#' @export
+dt_range <- function(df, coldate, colname){
+  df2 <- dplyr::select(df, .data[[coldate]], .data[[colname]])
+  df2 <- dplyr::group_by(df2, .data[[colname]])
+  date_range <- dplyr::summarise(df2, minDate=min(.data[[coldate]]), maxDate=max(.data[[coldate]]))
+  date_range <- dplyr::arrange(date_range, desc(maxDate))
+
+  date_range
+}
+
+#' @export
+dt_range2 <- function(df, coldate, colname, colname2){
+  df2 <- dplyr::select(df, .data[[coldate]], .data[[colname]], .data[[colname2]])
+  df2 <- dplyr::group_by(df2, .data[[colname]], .data[[colname2]])
+  date_range2 <- dplyr::summarise(df2, minDate=min(.data[[coldate]]), maxDate=max(.data[[coldate]]))
+
+  date_range2
 }
 
 #' @export
@@ -42,31 +70,5 @@ wcsv <- function(df, nm) {
   readr::write_csv(df, nm)
 }
 
-#' @export
-col2txt <- function(df, cnum) {
-  f <- file("text.txt", "w")
-  for (i in 1:dim(df)[1]) {
-    writeLines(as.character(df[i, cnum]), f)
-  }
-  close(f)
-}
 
-#' @export
-dt_range <- function(df, coldate, colname){
-  df2 <- dplyr::select(df, .data[[coldate]], .data[[colname]])
-  df2 <- dplyr::group_by(df2, .data[[colname]])
-  date_range <- dplyr::summarise(df2, minDate=min(.data[[coldate]]), maxDate=max(.data[[coldate]]))
-  date_range <- dplyr::arrange(date_range, desc(maxDate))
-
-  date_range
-}
-
-#' @export
-dt_range2 <- function(df, coldate, colname, colname2){
-  df2 <- dplyr::select(df, .data[[coldate]], .data[[colname]], .data[[colname2]])
-  df2 <- dplyr::group_by(df2, .data[[colname]], .data[[colname2]])
-  date_range2 <- dplyr::summarise(df2, minDate=min(.data[[coldate]]), maxDate=max(.data[[coldate]]))
-
-  date_range2
-}
 
