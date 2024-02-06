@@ -2,6 +2,7 @@
 
 export(col2txt)
 export(desc_cnt)
+export(desc_cnt2)
 export(dt_range)
 export(dt_range2)
 export(rcsv)

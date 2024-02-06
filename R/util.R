@@ -33,6 +33,17 @@ desc_cnt <- function(df, c){
 }
 
 #' @export
+desc_cnt2 <- function(df, c1, c2) {
+  df2 <- dplyr::select(df, .data[[c1]], .data[[c2]])
+  df2 <- dplyr::group_by(df2, .data[[c1]], .data[[c2]])
+  df2 <- dplyr::summarise(df2, cnt=dplyr::n())
+  df2 <- dplyr::arrange(df2, desc(cnt))
+  View(df2)
+
+  df2
+}
+
+#' @export
 dt_range <- function(df, coldate, colname){
   df2 <- dplyr::select(df, .data[[coldate]], .data[[colname]])
   df2 <- dplyr::group_by(df2, .data[[colname]])
