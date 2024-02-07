@@ -6,6 +6,7 @@
 #' @importFrom readr write_csv
 #' @importFrom readr col_character
 #' @importFrom readxl read_xlsx
+#' @importFrom writexl write_xlsx
 
 #   Install Package:           'Ctrl + Shift + B'
 #   Check Package:             'Ctrl + Shift + E'
@@ -74,6 +75,11 @@ rxl <- function(f){
   df <- readxl::read_xlsx(f)
 
   df
+}
+
+#' @export
+wxl <- function(f, fname) {
+  writexl::write_xlsx(f, fname)
 }
 
 #' @export
