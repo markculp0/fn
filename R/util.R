@@ -2,6 +2,7 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #' @importFrom dplyr arrange
+#' @importFrom dplyr filter
 #' @importFrom readr read_csv
 #' @importFrom readr write_csv
 #' @importFrom readr col_character
@@ -87,5 +88,23 @@ wcsv <- function(df, nm) {
   readr::write_csv(df, nm)
 }
 
+#' @export
+wheq <- function(df, cnam, value){
+  df2 <- dplyr::filter(df, .data[[cnam]] == value)
+  View(df2)
+  df2
+}
 
+#' @export
+whgt <- function(df, cnam, value){
+  df2 <- dplyr::filter(df, .data[[cnam]] > value)
+  View(df2)
+  df2
+}
 
+#' @export
+whlt <- function(df, cnam, value){
+  df2 <- dplyr::filter(df, .data[[cnam]] < value)
+  View(df2)
+  df2
+}

@@ -21,6 +21,14 @@ Some R wrapper/utility functions for quick command line use.
 
 * wcsv - Write a data frame to a CSV file.
 
+* wheq - Where equal to filter.
+
+* whgt - Where greater than filter. 
+
+* whlt - Where less than filter.
+
+* wxl - Write data frame to an Excel file
+
 
 ***
 ***
