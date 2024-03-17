@@ -1,8 +1,21 @@
-#' @importFrom dplyr select
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
 #' @importFrom dplyr arrange
+#' @importFrom dplyr cross_join
 #' @importFrom dplyr filter
+#' @importFrom dplyr group_by
+#' @importFrom dplyr join_by
+#' @importFrom dplyr left_join
+#' @importFrom dplyr select
+#' @importFrom dplyr summarise
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 scale_x_date
+#' @importFrom ggplot2 theme
+#' @importFrom lubridate as_date
+#' @importFrom lubridate hour
+#' @importFrom lubridate ymd_hms
 #' @importFrom readr read_csv
 #' @importFrom readr write_csv
 #' @importFrom readr col_character
@@ -12,6 +25,10 @@
 #   Install Package:           'Ctrl + Shift + B'
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
+#   Load All                   'Ctrl + Shift + L'
+#   Document                 devtools::document()
+#   Use data       usethis::use_data(my_pkg_data)
+#   Build Binary Pkg     Build > Build Binary Pkg
 
 #' @export
 col2txt <- function(df, cnum) {
@@ -20,6 +37,21 @@ col2txt <- function(df, cnum) {
     writeLines(as.character(df[i, cnum]), f)
   }
   close(f)
+}
+
+# Util function to add date time columns
+dttm_col <- function(df, dfScol) {
+
+  # Create datetime column
+  df$dttm <- lubridate::ymd_hms(dfScol)
+
+  # Create date column
+  df$dt <- lubridate::as_date(df$dttm)
+
+  # Create hour column
+  df$hr <- lubridate::hour(df$dttm)
+
+  df
 }
 
 #' @export
@@ -65,10 +97,46 @@ dt_range2 <- function(df, coldate, colname, colname2){
 }
 
 #' @export
+evt_id_join <- function(df) {
+  event_ids <- fn::event_ids
+  df$EventID <- as.numeric(df$EventID)
+  df2 <- dplyr::left_join(df, event_ids, by = join_by(EventID == EventID), copy = TRUE)
+  df2
+}
+
+#' @export
+gplot_by_day <- function(df, dfScol) {
+  rg <- rg_title(dfScol)
+  df <- dttm_col(df, dfScol)
+  ggplot2::ggplot(df, ggplot2::aes(x=dt)) +
+    ggplot2::scale_x_date(date_labels = "%a,%m/%d", date_breaks = "day") +
+    ggplot2::theme(axis.text.x=ggplot2::element_text(angle=60, hjust=1)) +
+    ggtitle(rg) +
+    ggplot2::geom_bar()
+}
+
+#' @export
+gplot_by_hour <- function(df, dfScol, dt) {
+  # Add date & hour columns
+  df <- dttm_col(df, dfScol)
+
+  # Bar chart hourly counts
+  ggplot2::ggplot(df, ggplot2::aes(x=hr)) +
+    ggplot2::ggtitle(dt) +
+    ggplot2::geom_bar()
+}
+
+#' @export
 rcsv <- function(f){
   df <- readr::read_csv(f, col_types = list(
     .default = readr::col_character()
   ))
+}
+
+# Create date range string
+rg_title <- function(dfScol){
+  rg <- paste(range(dfScol)[1], range(dfScol)[2], sep = " to ")
+  rg
 }
 
 #' @export
