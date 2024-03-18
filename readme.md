@@ -7,33 +7,95 @@
 
 Some R wrapper/utility functions for quick command line use.
 
-* col2txt - Convert a data frame column to text.
+* **col2txt** - Convert a data frame column to text.  Provide column number to dump.
 
-* desc_cnt - Descending order count of a data frame column.
+```
+    fn::col2txt(df, 3)
+```
 
-* dt_range - Display the date range of a categorical column in a data frame.
+* **desc_cnt** - Descending order count of a data frame column.
 
-* dt_range2 - Display the date range of two categorical columns in a data frame.
+```
+    fn::desc_cnt(df, "EventID")
+```
 
-* evt_id_join - Join descriptions of Windows Security log EventIDs to a data frame.
+* **desc_cnt2** - Descending order count of two data frame columns.
 
-* gplot_by_day - Plot time series data in a bar chart by date.
+```
+    fn::desc_cnt2(df, "EventID", "Type")
+```
 
-* gplot_by_hour - Plot time series data in a bar chart by hour of a given date.
+* **dt_range** - Display the date range of a categorical column in a data frame, given date column and categorical column.
 
-* rcsv - Read a CSV file into a data frame.  
+```
+    fn::dt_range(df, "TimeGenerated", "EventID")
+```
 
-* rxl - Read an Excel file into a data frame.
+* **dt_range2** - Display the date range of two categorical columns in a data frame.
 
-* wcsv - Write a data frame to a CSV file.
+```
+    fn::dt_range(df, "TimeGenerated", "EventID", "Type")
+```
 
-* wheq - Where equal to filter.
+* **evt_id_join** - Join descriptions of Windows Security log EventIDs to a data frame.  Assumes a data frame with an EventID column.
 
-* whgt - Where greater than filter. 
+```
+    fn::evt_id_join(df)
+```
 
-* whlt - Where less than filter.
+* **gplot_by_day** - Plot time series data in a bar chart by date.
 
-* wxl - Write data frame to an Excel file
+```
+    fn::gplot_by_day(df, df$TimeGenerated)    
+```
+
+* **gplot_by_hour** - Plot time series data in a bar chart by hour of a given date.
+
+```
+    fn::gplot_by_hour(df, df$TimeGenerated, "2022-06-22")
+```
+
+* **rcsv** - Read a CSV file into a data frame.  
+
+```
+    df <- fn::rcsv("evtlog.csv")
+```
+
+* **rxl** - Read an Excel file into a data frame.
+
+```
+    df <- fn::rxl("file.xlsx")
+```
+
+* **wcsv** - Write a data frame to a CSV file.
+
+```
+    fn::wcsv(df, "file.csv")
+```
+
+* **wheq** - Where equal to filter.
+
+```
+    df2 <- fn::wheq(df, "EventID", "4624")
+```
+
+* **whgt** - Where greater than or equal to filter. 
+
+```
+    df2 <- fn::whgt(df, "TimeGenerated", "2022-06-30")
+```
+
+* **whlt** - Where less than or equal to filter.
+
+```
+    df2 <- fn::whlt(df, "TimeGenerated", "2022-06-30")
+```
+
+* **wxl** - Write data frame to an Excel file
+
+```
+    fn::wxl(df, "file.xlsx")
+```
 
 
 ***
