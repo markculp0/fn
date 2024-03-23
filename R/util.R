@@ -1,8 +1,6 @@
 #' @importFrom dplyr arrange
-#' @importFrom dplyr cross_join
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
-#' @importFrom dplyr join_by
 #' @importFrom dplyr left_join
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
@@ -98,9 +96,16 @@ dt_range2 <- function(df, coldate, colname, colname2){
 
 #' @export
 evt_id_join <- function(df) {
+  # Add data
   event_ids <- fn::event_ids
-  df$EventID <- as.numeric(df$EventID)
-  df2 <- dplyr::left_join(df, event_ids, by = join_by(EventID == EventID), copy = TRUE)
+
+  # Change EventId column name to EventID
+  nms <- names(df)
+  nms <- gsub("EventId", "EventID", nms)
+  names(df) <- nms
+
+  # Join event_ids db
+  df2 <- dplyr::left_join(df, event_ids, by = c("EventID" = "EventID"), copy = TRUE)
   df2
 }
 
