@@ -55,10 +55,28 @@ Some R wrapper/utility functions for quick command line use.
     fn::gplot_by_hour(df, df$TimeGenerated, "2022-06-22")
 ```
 
+* **rautoruns** - Read a tab separated autoruns output file and return dataframes of interest.  
+
+```
+    fn::rautoruns("autoruns.csv")
+```
+
 * **rcsv** - Read a CSV file into a data frame.  
 
 ```
     df <- fn::rcsv("evtlog.csv")
+```
+
+* **rcsvn** - Read a CSV file with no headers.  
+
+```
+    df <- fn::rcsvn("evtlog.csv")
+```
+
+* **rtsv** - Read a tab separated file into a data frame.  
+
+```
+    df <- fn::rtsv("evtlog.tsv")
 ```
 
 * **rxl** - Read an Excel file into a data frame.

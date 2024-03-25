@@ -15,6 +15,7 @@
 #' @importFrom lubridate hour
 #' @importFrom lubridate ymd_hms
 #' @importFrom readr read_csv
+#' @importFrom readr read_delim
 #' @importFrom readr write_csv
 #' @importFrom readr col_character
 #' @importFrom readxl read_xlsx
@@ -132,10 +133,61 @@ gplot_by_hour <- function(df, dfScol, dt) {
 }
 
 #' @export
+rautoruns <- function(f){
+
+  # Read in autoruns.csv
+  df <- readr::read_delim(f, delim = '\t', col_types =  list(
+    .default = readr::col_character()
+  ))
+
+  # Remove category headers
+  hitL <- is.na(df$Entry)
+  df <- df[!hitL,]
+
+  # Run registry key
+  hitL <- grepl("Run", df$`Entry Location`)
+  run_key <<- df[hitL,]
+  View(run_key)
+
+  # Blank timestamps
+  hitL <- is.na(df$Time)
+  blank_dttm <<- df[hitL,]
+
+  # Not verified
+  hitL <- grepl("^\\(Verified", df$Signer)
+  not_verify <<- df[!hitL,]
+  verify <- df[hitL,]
+  View(not_verify)
+
+  # Signers
+  signer <- dplyr::select(verify, Signer)
+  signer <- dplyr::group_by(signer, Signer)
+  signer <- dplyr::summarise(signer, cnt=dplyr::n())
+  signer <<- dplyr::arrange(signer, desc(cnt))
+
+}
+
+#' @export
 rcsv <- function(f){
   df <- readr::read_csv(f, col_types = list(
     .default = readr::col_character()
   ))
+}
+
+#' @export
+rcsvn <- function(f){
+  df <- readr::read_csv(f, col_names = FALSE,
+    col_types = list(
+    .default = readr::col_character()
+  ))
+}
+
+#' @export
+rtsv <- function(f){
+  df <- readr::read_delim(f, delim = '\t', col_types =  list(
+    .default = readr::col_character()
+  ))
+  df
 }
 
 # Create date range string
