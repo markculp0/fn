@@ -168,6 +168,28 @@ rautoruns <- function(f){
 }
 
 #' @export
+rcports <- function(f){
+
+  cports_header <- fn::cports_header
+  df <- rcsvn(f)
+  names(df) <- c(cports_header)
+
+  # Established
+  established <<- dplyr::filter(df, State == "Established")
+  View(established)
+
+  # Remote connections
+  remote <- dplyr::select(df, RemoteHostName, RemoteAddress, RemotePort, State, Company, ProcessName, ProcessPath)
+  hitL <- is.na(remote$RemoteAddress); remote <- remote[!hitL,]; rm(hitL)
+  hitL <- remote$RemoteAddress %in% c("0.0.0.0", "::", "127.0.0.1")
+  remote <<- remote[!hitL,]
+
+  # All
+  cports <<- df
+
+}
+
+#' @export
 rcsv <- function(f){
   df <- readr::read_csv(f, col_types = list(
     .default = readr::col_character()
