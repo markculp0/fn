@@ -14,6 +14,8 @@
 #' @importFrom lubridate as_date
 #' @importFrom lubridate hour
 #' @importFrom lubridate ymd_hms
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_extract_all
 #' @importFrom readr read_csv
 #' @importFrom readr read_delim
 #' @importFrom readr write_csv
@@ -74,6 +76,39 @@ desc_cnt2 <- function(df, c1, c2) {
   View(df2)
 
   df2
+}
+
+#' @export
+doc2txt <- function(doc){
+  # Temp directory
+  dir.create("_tmp")
+
+  # Get docname and docpath
+  docname <- gsub(".docx","", doc)
+  docpath <- stringr::str_extract(docname, "^.+/")
+  docname <- gsub("^.+/","",docname)
+
+  # Unzip docx, extract text
+  unzip(doc, exdir = "_tmp")
+  txt <- readLines("_tmp/word/document.xml")
+
+  # Filter text
+  l <- stringr::str_extract_all(txt[2], "<w:t.*</w:t")
+  txt2 <- l[[1]]
+
+  # Remove text
+  txt2 <- gsub("<w:[^>]+>", "", txt2)
+  txt2 <- gsub("</w:[^>]+>", "", txt2)
+  txt2 <- gsub("</w:t", "", txt2)
+
+  # Write output
+  docout <- paste0(docpath, docname, ".txt")
+  writeLines(txt2, docout)
+
+  # Clean up
+  rm(l, txt, txt2, doc, docname, docpath, docout)
+  unlink("_tmp", recursive = T, force = T)
+
 }
 
 #' @export

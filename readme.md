@@ -25,6 +25,12 @@ Some R wrapper/utility functions for quick command line use.
     fn::desc_cnt2(df, "EventID", "Type")
 ```
 
+* **doc2txt** - Convert a Word .docx file to text
+
+```
+    fn::doc2txt("file.docx")
+```
+
 * **dt_range** - Display the date range of a categorical column in a data frame, given date column and categorical column.
 
 ```
