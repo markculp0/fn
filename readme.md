@@ -43,6 +43,18 @@ Some R wrapper/utility functions for quick command line use.
     fn::dt_range(df, "TimeGenerated", "EventID", "Type")
 ```
 
+* **dttm_mdy_hm** - Add a properly formatted datetime stamp to beginning of a log file in month/day/year hour/minute format. 
+
+```
+    df2 <- dttm_mdy_hm(df, df$DateTime)
+```
+
+* **dttm_mdy_hms** - Add a properly formatted datetime stamp to beginning of a log file in month/day/year hour/minute/second format. 
+
+```
+    df2 <- dttm_mdy_hms(df, df$DateTime)
+```
+
 * **evt_id_join** - Join descriptions of Windows Security log EventIDs to a data frame.  Assumes a data frame with an EventID column.
 
 ```

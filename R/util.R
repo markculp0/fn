@@ -1,4 +1,5 @@
 #' @importFrom dplyr arrange
+#' @importFrom dplyr bind_cols
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
 #' @importFrom dplyr left_join
@@ -13,6 +14,7 @@
 #' @importFrom ggplot2 theme
 #' @importFrom lubridate as_date
 #' @importFrom lubridate hour
+#' @importFrom lubridate ymd_hm
 #' @importFrom lubridate ymd_hms
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_extract_all
@@ -131,6 +133,24 @@ dt_range2 <- function(df, coldate, colname, colname2){
   date_range2 <- dplyr::summarise(df2, minDate=min(.data[[coldate]]), maxDate=max(.data[[coldate]]))
 
   date_range2
+}
+
+#' @export
+dttm_mdy_hm <- function(df, dfSc){
+  dttm <- lubridate::mdy_hm(dfSc)
+  dttm <- as.character(dttm)
+  dttm <- data.frame(dttm)
+  df2 <- dplyr::bind_cols(dttm, df)
+  df2
+}
+
+#' @export
+dttm_mdy_hms <- function(df, dfSc){
+  dttm <- lubridate::mdy_hms(dfSc)
+  dttm <- as.character(dttm)
+  dttm <- data.frame(dttm)
+  df2 <- dplyr::bind_cols(dttm, df)
+  df2
 }
 
 #' @export
