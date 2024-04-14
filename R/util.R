@@ -16,11 +16,14 @@
 #' @importFrom lubridate ymd_hms
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_extract_all
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_split
 #' @importFrom readr read_csv
 #' @importFrom readr read_delim
 #' @importFrom readr write_csv
 #' @importFrom readr col_character
 #' @importFrom readxl read_xlsx
+#' @importFrom tibble as_tibble
 #' @importFrom writexl write_xlsx
 
 #   Install Package:           'Ctrl + Shift + B'
@@ -290,3 +293,124 @@ whlt <- function(df, cnam, value){
   View(df2)
   df2
 }
+
+# wevtutil functions ------------------------------------------------------
+
+# Create dataframe from logfile entries
+# a=log, h=map, col1=1st column name
+wevt_add_columns <- function(a, h, col1){
+  # Subset a
+  a2 <- a[h]
+
+  # Remove tabs, spaces
+  a2 <- gsub("[\t ,]", "", a2)
+
+  # Count sets of log entries & columns
+  hitL <- grepl(col1, a2)
+  n <- sum(hitL)
+  c <- (length(a2) / n)
+
+  # Replace 1st : in each string
+  a2 <- stringr::str_replace(a2, ":", "|")
+
+  # Return list of 2 char vectors
+  l <- stringr::str_split(a2, "\\|")
+
+  # Get column names from 1 set
+  colnames <- sapply(l,"[[",1)
+  colnames <- colnames[1:c]
+
+  # Get column values
+  colvalue <- sapply(l,"[[",2)
+  m2 <- matrix(colvalue, nrow = n, ncol = c, byrow = T)
+  df2 <- tibble::as_tibble(m2,  .name_repair = ~ colnames)
+  df2
+}
+
+# Add a key-value lookup column
+wevt_add_lookup_column <- function(key, newcolname){
+
+  n <- length(key)
+  keyvalue <- vector("list", n)
+
+  i <- 1
+  for (k in key){
+    keyvalue[[i]] <- fn::logontype[[k]]
+    i <- i + 1
+  }
+  keyvalue <- unlist(keyvalue)
+
+  # Convert to data frame
+  m3 <- matrix(keyvalue)
+  df3 <- tibble::as_tibble(m3,  .name_repair = ~ newcolname)
+
+  df3
+}
+
+# Return boolean map for section matches
+wevt_section_map <- function(a, section, offsets){
+  # offsets <- c(1,2,3)
+
+  h <- grepl(section, a)
+
+  i <- 1
+  l <- vector("list", length(offsets))
+  for (i in offsets) {
+    l[[i]] <- which(h) + i
+    i <- i + 1
+  }
+  v <- unlist(l)
+  h <- xor(h,h)
+  h[v] <- TRUE
+
+  h
+}
+
+# Get Windows event log 4624 events
+#' @export
+wevt_logon_4624 <- function(n=10){
+
+  cmd <- paste0("wevtutil qe \"Security.evtx\" /q:\"Event/System/EventID=4624\" /lf:true /f:text /rd:true /c:", n)
+  a <- system(cmd, intern = T)
+
+  # Subset header columns
+  h1 <- grepl("Date:|Event ID:| Task:|Keyword:| User:|User Name:|Computer:|Logon Type:", a)
+  df <- wevt_add_columns(a, h1, "^Date")
+
+  # Add key-value column
+  key <- df$LogonType
+  df2 <- wevt_add_lookup_column(key, "TypeName")
+
+  # Add Subject subsection columns
+  h2 <- wevt_section_map(a, "Subject:", c(1,2,3))
+  a[h2] <- gsub("Security ID:", "SubSecID:", a[h2])
+  a[h2] <- gsub("Account Name:", "SubAcctName:", a[h2])
+  a[h2] <- gsub("Account Domain:", "SubAcctDomain:", a[h2])
+  df3 <- wevt_add_columns(a, h2, "SubSecID")
+
+  # Add New Logon subsection columns
+  h3 <- wevt_section_map(a, "New Logon:", c(1,2,3))
+  a[h3] <- gsub("Security ID:", "NewSecID:", a[h3])
+  a[h3] <- gsub("Account Name:", "NewAcctName:", a[h3])
+  a[h3] <- gsub("Account Domain:", "NewAcctDomain:", a[h3])
+  df4 <- wevt_add_columns(a, h3, "NewSecID")
+
+  # Add Process Information subsection columns
+  h4 <- wevt_section_map(a, "Process Information:", c(1,2))
+  df5 <- wevt_add_columns(a, h4, "ProcessID")
+
+  # Add Network Information subsection columns
+  h5 <- wevt_section_map(a, "Network Information:", c(1,2,3))
+  a[h5] <- gsub("Workstation Name:", "WkstaName:", a[h5])
+  a[h5] <- gsub("Source Network Address:", "SrcNetwkAddr:", a[h5])
+  a[h5] <- gsub("Source Port:", "SrcPort:", a[h5])
+  df6 <- wevt_add_columns(a, h5, "WkstaName")
+
+  df <- dplyr::bind_cols(df, df2, df3, df4, df5, df6)
+
+  View(df)
+  df
+}
+
+
+

@@ -109,6 +109,12 @@ Some R wrapper/utility functions for quick command line use.
     df2 <- fn::wheq(df, "EventID", "4624")
 ```
 
+* **wevt_logon_4624** - Get Windows event log 4624 from Security.evtx.
+
+```
+    df <- wevt_logon_4624(20)
+```
+
 * **whgt** - Where greater than or equal to filter. 
 
 ```
