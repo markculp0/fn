@@ -151,6 +151,18 @@ Some R wrapper/utility functions for quick command line use.
     df <- wevt_logoff_4647(5)
 ```
 
+* **wevt_logon_runas_4648** - Get Windows event ID 4648 user runas logon (explicit creds) from Security.evtx.
+
+```
+    df <- wevt_logon_runas_4648(5)
+```
+
+* **wevt_logon_admin_4672** - Get Windows event ID 4672 user admin logon from Security.evtx.
+
+```
+    df <- wevt_logon_admin_4672(5)
+```
+
 * **whgt** - Where greater than or equal to filter. 
 
 ```

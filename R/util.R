@@ -583,4 +583,78 @@ wevt_logoff_4647 <- function(n=10){
   df
 }
 
+# Get 4648 events
+#' @export
+wevt_logon_runas_4648 <- function(n=10){
+
+  cmd <- paste0("wevtutil qe \"Security.evtx\" /q:\"Event/System/EventID=4648\" /lf:true /f:text /rd:true /c:", n)
+  a <- system(cmd, intern = T)
+
+  # Subset header columns
+  h1 <- grepl("Date:|Event ID:| Task:|Keyword:| User:|User Name:|Computer:", a)
+  df <- wevt_add_columns(a, h1, "^Date")
+
+  # Add Subject subsection columns
+  h2 <- wevt_section_map(a, "Subject:", c(1,2,3,4))
+  a[h2] <- gsub("Security ID:", "SubSecID:", a[h2])
+  a[h2] <- gsub("Account Name:", "SubAcctName:", a[h2])
+  a[h2] <- gsub("Account Domain:", "SubAcctDomain:", a[h2])
+  a[h2] <- gsub("Logon ID:", "SubLogonID:", a[h2])
+  df3 <- wevt_add_columns(a, h2, "SubSecID")
+
+  # Add Account Whose Credentials ... subsection columns
+  h3 <- wevt_section_map(a, "Account Whose Credentials", c(1,2))
+  a[h3] <- gsub("Account Name:", "CredAcctName:", a[h3])
+  a[h3] <- gsub("Account Domain:", "CredAcctDomain:", a[h3])
+  df4 <- wevt_add_columns(a, h3, "CredAcctName")
+
+  # Add Target Server subsection columns
+  h6 <- wevt_section_map(a, "Target Server:", c(1,2))
+  a[h6] <- gsub("Target Server Name:", "TrgtSrvrName:", a[h6])
+  a[h6] <- gsub("Additional Information:", "TrgtAddlInfo:", a[h6])
+  df2 <- wevt_add_columns(a, h6, "TrgtSrvrName")
+
+  # Add Process Information subsection columns
+  h4 <- wevt_section_map(a, "Process Information:", c(1,2))
+  a[h4] <- gsub("Process ID:", "ProcID:", a[h4])
+  a[h4] <- gsub("Process Name:", "ProcName:", a[h4])
+  df5 <- wevt_add_columns(a, h4, "ProcID")
+
+  # Add Network Information subsection columns
+  h5 <- wevt_section_map(a, "Network Information:", c(1,2))
+  a[h5] <- gsub("Network Address:", "NetwkAddr:", a[h5])
+  a[h5] <- gsub("Port:", "NetwkPort:", a[h5])
+  df6 <- wevt_add_columns(a, h5, "NetwkAddr")
+
+  df <- dplyr::bind_cols(df, df3, df2, df4, df5, df6)
+
+  View(df)
+  df
+}
+
+# Get 4672 events
+#' @export
+wevt_logon_admin_4672 <- function(n=10){
+
+  cmd <- paste0("wevtutil qe \"Security.evtx\" /q:\"Event/System/EventID=4672\" /lf:true /f:text /rd:true /c:", n)
+  a <- system(cmd, intern = T)
+
+  # Subset header columns
+  h1 <- grepl("Date:|Event ID:| Task:|Keyword:| User:|User Name:|Computer:", a)
+  df <- wevt_add_columns(a, h1, "^Date")
+
+  # Add Subject subsection columns
+  h2 <- wevt_section_map(a, "Subject:", c(1,2,3,4))
+  a[h2] <- gsub("Security ID:", "SubSecID:", a[h2])
+  a[h2] <- gsub("Account Name:", "SubAcctName:", a[h2])
+  a[h2] <- gsub("Account Domain:", "SubAcctDomain:", a[h2])
+  a[h2] <- gsub("Logon ID:", "SubLogonID:", a[h2])
+  df3 <- wevt_add_columns(a, h2, "SubSecID")
+
+  df <- dplyr::bind_cols(df, df3)
+
+  View(df)
+  df
+}
+
 
