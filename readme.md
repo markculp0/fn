@@ -181,6 +181,14 @@ Some R wrapper/utility functions for quick command line use.
     fn::wxl(df, "file.xlsx")
 ```
 
+* **yarascan** - Perform Yara scan on a file, directory, or process ID.  Assumes yara ruleset in c:\yara\rules directory and yara64.exe installed on system. 
+
+```
+  fn::yarascan("autoruns")    # A directory
+  fn::yarascan(r"[C:\temp]")  # Win path
+  fn::yarascan(8336)          # ProcessID
+```
+
 
 ***
 ***

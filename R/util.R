@@ -657,4 +657,8 @@ wevt_logon_admin_4672 <- function(n=10){
   df
 }
 
-
+#' @export
+yarascan <- function(raw_t) {
+  cmd <- paste0("yara64 -w c:\\yara\\rules\\index.yar ", raw_t)
+  system(cmd)
+}
